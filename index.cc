@@ -47,26 +47,26 @@ class GetImageWorker : public Nan::AsyncWorker {
 			image = ( Image* )malloc(sizeof(Image));
 			image->data = (char*) malloc(sizeof(char)*width*height*4);
 
-      if(XShmGetImage(display, rootWindow, ximage, 0, 0, XAllPlanes()) == 0) {
-        printf("FATAL: XShmGetImage failed.\n");
-        exit(-1);
-      }
+			if(XShmGetImage(display, rootWindow, ximage, 0, 0, XAllPlanes()) == 0) {
+			  printf("FATAL: XShmGetImage failed.\n");
+			  exit(-1);
+			}
 
-      image->width = ximage->width;
-      image->height = ximage->height;
+			image->width = ximage->width;
+			image->height = ximage->height;
 			image->size = image->width * image->height * 4;
-      memcpy(image->data, ximage->data, image->size);
-      image->depth = ximage->depth;
-      image->bits_per_pixel = ximage->bits_per_pixel;
-      image->bytes_per_line = ximage->bytes_per_line;
+			memcpy(image->data, ximage->data, image->size);
+			image->depth = ximage->depth;
+			image->bits_per_pixel = ximage->bits_per_pixel;
+			image->bytes_per_line = ximage->bytes_per_line;
 
-      unsigned char blue;
-      for(int i = 0; i < image->size; i += 4){
-        blue = image->data[i];
+			unsigned char blue;
+			for(int i = 0; i < image->size; i += 4){
+			  blue = image->data[i];
 
-        image->data[i]     = image->data[i + 2];
-        image->data[i + 2] = blue;
-      }
+			  image->data[i]     = image->data[i + 2];
+			  image->data[i + 2] = blue;
+			}
 
 		}
 
@@ -96,7 +96,6 @@ class GetImageWorker : public Nan::AsyncWorker {
 			v8::Local<v8::Value> argv[] = {
 				Nan::New(this->ErrorMessage()).ToLocalChecked(), // return error message
 				Nan::Null()
-
 			};
 			callback->Call(2, argv);
 
@@ -110,60 +109,60 @@ NAN_METHOD(init)
 		pDisplay  = *dstr;
 	}
 
-  int ignore = 0;
-  bzero(&__xshminfo, sizeof(__xshminfo));
+	int ignore = 0;
+	bzero(&__xshminfo, sizeof(__xshminfo));
 
-  // open display
-  if((display = XOpenDisplay(pDisplay)) == NULL) {
-    printf("cannot open display \"%s\"\n", pDisplay ? pDisplay : "DEFAULT");
-  }
+	// open display
+	if((display = XOpenDisplay(pDisplay)) == NULL) {
+	  printf("cannot open display \"%s\"\n", pDisplay ? pDisplay : "DEFAULT");
+	}
 
-  // check MIT extension
-  if(XQueryExtension(display, "MIT-SHM", &ignore, &ignore, &ignore) ) {
-    int major, minor;
-    Bool pixmaps;
-    if(XShmQueryVersion(display, &major, &minor, &pixmaps) == True) {
-      printf("XShm extention version %d.%d %s shared pixmaps\n",
-          major, minor, (pixmaps==True) ? "with" : "without");
-    } else {
-      printf("XShm extension not supported.\n");
-    }
+	// check MIT extension
+	if(XQueryExtension(display, "MIT-SHM", &ignore, &ignore, &ignore) ) {
+	  int major, minor;
+	  Bool pixmaps;
+	  if(XShmQueryVersion(display, &major, &minor, &pixmaps) == True) {
+	    printf("XShm extention version %d.%d %s shared pixmaps\n",
+	        major, minor, (pixmaps==True) ? "with" : "without");
+	  }else{
+	    printf("XShm extension not supported.\n");
+	  }
   }
   // get default screen
-  screenNumber = XDefaultScreen(display);
-  if((screen = XScreenOfDisplay(display, screenNumber)) == NULL) {
-    printf("cannot obtain screen #%d\n", screenNumber);
-  }
-  // get screen hight, width, depth
-  width = XDisplayWidth(display, screenNumber);
-  height = XDisplayHeight(display, screenNumber);
-  depth = XDisplayPlanes(display, screenNumber);
-  printf("X-Window-init: dimension: %dx%dx%d @ %d/%d\n",
-      width, height, depth,
-      screenNumber, XScreenCount(display));
-  //create image context
-  if((ximage = XShmCreateImage(display,
-          XDefaultVisual(display, screenNumber),
-          depth, ZPixmap, NULL, &__xshminfo,
-          width, height)) == NULL) {
-    printf("XShmCreateImage failed.\n");
-  }
+	screenNumber = XDefaultScreen(display);
+	if((screen = XScreenOfDisplay(display, screenNumber)) == NULL) {
+	  printf("cannot obtain screen #%d\n", screenNumber);
+	}
+	// get screen hight, width, depth
+	width = XDisplayWidth(display, screenNumber);
+	height = XDisplayHeight(display, screenNumber);
+	depth = XDisplayPlanes(display, screenNumber);
+	printf("X-Window-init: dimension: %dx%dx%d @ %d/%d\n",
+	    width, height, depth,
+	    screenNumber, XScreenCount(display));
+	//create image context
+	if((ximage = XShmCreateImage(display,
+	        XDefaultVisual(display, screenNumber),
+	        depth, ZPixmap, NULL, &__xshminfo,
+	        width, height)) == NULL) {
+	  printf("XShmCreateImage failed.\n");
+	}
 
 
-  //get shm info
-  if((__xshminfo.shmid = shmget(IPC_PRIVATE,
-          ximage->bytes_per_line*ximage->height,
-          IPC_CREAT | 0777)) < 0) {
-    printf("shmget error");
-  }
+	//get shm info
+	if((__xshminfo.shmid = shmget(IPC_PRIVATE,
+	        ximage->bytes_per_line*ximage->height,
+	        IPC_CREAT | 0777)) < 0) {
+	  printf("shmget error");
+	}
 
-  __xshminfo.shmaddr = ximage->data = (char*) shmat(__xshminfo.shmid, 0, 0);
-  __xshminfo.readOnly = False;
-  if(XShmAttach(display, &__xshminfo) == 0) {
-    printf("XShmAttach failed.\n");
-  }
+	__xshminfo.shmaddr = ximage->data = (char*) shmat(__xshminfo.shmid, 0, 0);
+	__xshminfo.readOnly = False;
+	if(XShmAttach(display, &__xshminfo) == 0) {
+	  printf("XShmAttach failed.\n");
+	}
 
-  rootWindow = XRootWindow(display, screenNumber);
+	rootWindow = XRootWindow(display, screenNumber);
 }
 
 NAN_METHOD(getImage)
