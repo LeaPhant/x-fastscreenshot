@@ -1,0 +1,29 @@
+{
+  "name": "x-fastscreenshot",
+  "version": "1.0.0",
+  "description": "node.js module for fast screenshots on the X window system via XShm",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LazyLea/x-fastscreenshot.git"
+  },
+  "keywords": [
+    "node.js",
+    "x11",
+    "x",
+    "xshm",
+    "c++"
+  ],
+  "author": "LazyLea",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/LazyLea/x-fastscreenshot/issues"
+  },
+  "homepage": "https://github.com/LazyLea/x-fastscreenshot#readme",
+  "devDependencies": {
+    "nan": "^2.12.1"
+  }
+}
