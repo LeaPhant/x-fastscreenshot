@@ -27,7 +27,7 @@ fastscreenshot.getImage((err, image){
 Taking a picture on a single 1080p screen setup takes around 16ms according to my benchmark
 
 ```JS
-const fastscreenshot = require("./node_modules/x-fastscreenshot/index.js");
+const fastscreenshot = require("x-fastscreenshot");
 fastscreenshot.init();
 
 console.time("img");
