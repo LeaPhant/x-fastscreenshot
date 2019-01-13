@@ -4,7 +4,7 @@
 typedef struct image {
 	int width;
 	int height;
-  int size;
+	int size;
 	char * data;
 	int depth;
 	int bytes_per_line;
