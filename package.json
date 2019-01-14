@@ -1,6 +1,6 @@
 {
   "name": "x-fastscreenshot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "node.js module for fast screenshots on the X window system via XShm",
   "main": "index.js",
   "scripts": {
