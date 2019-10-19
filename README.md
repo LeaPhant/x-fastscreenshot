@@ -14,11 +14,12 @@ const fastscreenshot = require('x-fastscreenshot');
 const jimp = require('jimp');
 fastscreenshot.init();
 
-fastscreenshot.getImage((err, image){
-  if(err) throw err;
-  jimp.read({width: image.width, height: image.height, data: image.data}).then(img => {
-    return img.write('output.png');
-  });
+fastscreenshot.getImage((err, image) => {
+	if(err) throw err;
+	
+	jimp.read({width: image.width, height: image.height, data: image.data}).then(img => {
+		return img.write('output.png');
+	});
 });
 ```
 
@@ -31,6 +32,7 @@ const fastscreenshot = require("x-fastscreenshot");
 fastscreenshot.init();
 
 console.time("img");
+
 fastscreenshot.getImage((err, image) => {
 	console.timeEnd("img");
 });
